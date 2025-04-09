@@ -33,14 +33,15 @@
 
 -- create table customers (
 -- id serial primary KEY,
--- "Name" varchar(100) not null,
+-- "name" varchar(100) not null,
 -- email varchar(60) not null,
 -- joined_date DATE default now()::date
 -- );
 -- 
--- Inserting data into customers table
 
--- INSERT INTO customers ("Name", email, joined_date) VALUES
+
+-- Inserting data into customers table
+-- INSERT INTO customers ("name", email, joined_date) VALUES
 -- ('John Doe', 'johndoe@example.com', '2023-01-15'),
 -- ('Alice Smith', 'alice.smith@example.com', '2022-07-22'),
 -- ('Michael Johnson', 'michael.j@example.com', '2021-11-05'),
@@ -74,81 +75,75 @@
 -- Inserting data into orders
 -- INSERT INTO orders (customer_id, book_id, quantity, order_date) VALUES
 -- (5, 12, 2, '2023-07-12 14:30:00'),
--- (8, 3, 0, '2022-05-25 10:15:00'),
 -- (12, 6, 3, '2024-01-08 18:45:00'),
 -- (3, 9, 2, '2021-11-30 09:10:00'),
 -- (7, 14, 1, '2023-04-05 16:20:00'),
 -- (10, 1, 4, '2020-09-17 12:00:00'),
 -- (4, 7, 2, '2024-02-20 08:50:00'),
 -- (15, 5, 3, '2023-06-10 22:10:00'),
--- (2, 13, 1, '2021-12-14 14:40:00'),
 -- (9, 8, 5, '2020-08-27 19:30:00'),
 -- (6, 10, 2, '2022-03-15 11:25:00'),
 -- (11, 4, 3, '2023-10-22 07:55:00'),
--- (14, 2, 0, '2024-05-18 15:05:00'),
--- (1, 11, 0, '2022-07-29 20:35:00'),
 -- (13, 15, 4, '2023-09-04 17:45:00'),
 -- (5, 6, 2, '2021-04-11 09:20:00'),
 -- (3, 12, 3, '2020-10-30 23:50:00'),
--- (8, 14, 0, '2023-11-07 06:15:00'),
 -- (12, 9, 2, '2024-06-21 13:00:00'),
 -- (7, 1, 5, '2022-01-19 18:10:00');
+
 -- 
 
 
 -- Q-1 Find books that are out of stock.
--- Ans: select * 
---      from books 
---      where stock =0;
+select * 
+     from books 
+     where stock =0;
 
 -- Q-2  Retrieve the most expensive book in the store.
---Ans: select * 
---     from books 
---     where price = (select max(price) from books);
+select * 
+    from books 
+    where price = (select max(price) from books);
 
 
 -- Q-3 Find the total number of orders placed by each customer.
--- Ans: select max("Name") as "name", sum(quantity) as total_orders
---      from customers 
---      join orders 
---      on customers.id = customer_id
---      group by email;
+select max("name") as "name", sum(quantity) as total_orders
+     from customers 
+     join orders 
+     on customers.id = customer_id
+     group by email;
 
 
 -- Q-4 Calculate the total revenue generated from book sales.
--- Ans: select sum(price) as total_revenue 
---      from orders  
---      join customers
---      On orders.customer_id = customers.id
---      join books
---      on orders.book_id = books.id ;
+ select sum(price*quantity) as total_revenue 
+     from orders  
+     join customers
+     On orders.customer_id = customers.id
+     join books
+     on orders.book_id = books.id ;
 
 
 -- Q-5 List all customers who have placed more than one order.
--- Ans: select "Name", quantity, email
---      from orders  
---      Join customers 
---      on orders.customer_id = customers.id
---      where quantity > 1;
+select "name", quantity, email
+     from orders  
+     Join customers 
+     on orders.customer_id = customers.id
+     where quantity > 1;
 
 -- Q-6  Find the average price of books in the store.
--- Ans: select avg(price) as avg_book_price
---      from books;
+select avg(price) as avg_book_price
+     from books;
 
 -- Q-7 Increase the price of all books published before 2000 by 10%.
--- Ans: update books
---      set price = price + (price * 0.10)
---      where published_year < 2000;
+update books
+     set price = price + (price * 0.10)
+     where published_year < 2000;
 
 -- Q-8 Delete customers who haven't placed any orders.
--- Ans: delete from customers 
---      where id in(
---     (select distinct customer_id
---      from orders
---      where quantity = 0))
---      returning *;
- 
-
+DELETE FROM customers 
+WHERE id NOT IN (
+  SELECT DISTINCT customer_id
+  FROM orders
+)
+RETURNING *;
 
 
 
